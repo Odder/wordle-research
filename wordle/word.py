@@ -4,28 +4,27 @@ from wordle.utils import word_to_number, PRIME_MAP
 
 
 class Word:
-    def __init__(self, word):
+    def __init__(self, word: str):
         self.word = word
         self.prime = word_to_number(word)
 
-    def guess(self, guess):
+    def guess(self, guess) -> tuple:
         total = self.prime
         score = [0] * 5
-        points = 0
-        for i, (a, g) in enumerate(zip(self.word, guess.word)):
-            if g == a:
-                score[i] = 2
-                total /= PRIME_MAP[g]
-                points += 2
+        checks = [
+            (2, lambda a, g: a == g),
+            (1, lambda a, g: a != g and total % PRIME_MAP[g] == 0),
+        ]
 
-        for i, (a, g) in enumerate(zip(self.word, guess.word)):
-            if g != a and total % PRIME_MAP[g] == 0:
-                score[i] = 1
-                total /= PRIME_MAP[g]
-                points += 1
-        return points, tuple(score)
+        for points, check in checks:
+            for i, (ans, gue) in enumerate(zip(self.word, guess.word)):
+                if check(ans, gue):
+                    score[i] = points
+                    total /= PRIME_MAP[gue]
 
-    def is_unique(self):
+        return tuple(score)
+
+    def is_unique(self) -> bool:
         return len(self.word) == len(set(self.word))
 
     def __repr__(self):
@@ -37,36 +36,26 @@ class Word:
     def __lt__(self, other):
         return self.word < other.word
 
+    def __eq__(self, other):
+        return self.word == other.word
+
 
 class Space:
     def __init__(self, words=None):
-        if words is None:
-            words = []
-        self.words = words
+        self.words = words or []
 
-    def map(self, word):
+    def map(self, word: Word) -> defaultdict:
         word_map = defaultdict(Space)
         for w in self:
-            _, s = w.guess(word)
-            word_map[s].append(w)
+            word_map[w.guess(word)].append(w)
 
         return word_map
 
-    def only_unique(self):
-        words = []
-        for word in self.words:
-            if len(set(word)) == len(word):
-                words.append(word)
+    def only_unique(self) -> None:
+        self.words = [word for word in self.words if word.is_unique()]
 
-        self.words = words
-
-    def filter(self, word, score=None):
-        results = []
-        for w in self.words:
-            _, s = w.guess(word)
-            if s == score:
-                results.append(w)
-        return Space(results)
+    def filter(self, word: Word, score: tuple = None):
+        return Space([w for w in self.words if w.guess(word) == score])
 
     def __iter__(self):
         return (w for w in self.words)
@@ -77,6 +66,6 @@ class Space:
     def __repr__(self):
         return str([w for w in self.words]) if len(self) < 30 else f'{len(self)} words in space'
 
-    def append(self, word):
+    def append(self, word: Word) -> None:
         self.words.append(word)
 

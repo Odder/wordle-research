@@ -23,12 +23,12 @@ def benchmark(alg=alg_random, guesses=None):
 
 if __name__ == '__main__':
     """ Run a benchmark """
-    # print(sum(benchmark()) / 2315)
+    # print(sum(benchmark(guesses=[Word('crane')], alg=alg_max_entropy)) / 2315)
     # print(sum(benchmark(guesses=[Word(w) for w in ['spilt', 'crane']], alg=alg_max_entropy)) / 2315)
 
     """ Make it play a single normal game """
     game = Game(
-        solution=Word('frame'),
+        solution=Word('trial'),
         guesses=[Word('crane')],
         printer=printer_simple,
         algorithm=alg_max_entropy)
