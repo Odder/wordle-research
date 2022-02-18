@@ -1,2 +1,2 @@
-from .play import Game, printer_simple, printer_void
+from .game import Game
 from .word import Word, Space

@@ -12,7 +12,7 @@ def alg_random(full_space: Space, space: Space) -> Word:
 
 @lru_cache(maxsize=10000)
 def alg_max_entropy(full_space: Space, space: Space) -> Word:
-    return max_entropy(space)[1]
+    return max_entropy(space, guess_space=full_space)[1]
 
 
 @lru_cache(maxsize=10000)

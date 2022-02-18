@@ -27,11 +27,30 @@ def max_space(space: Space) -> tuple:
 def max_entropy(space: Space, guess_space: Space = None) -> tuple:
     best = (0, Word(''))
     guess_space = guess_space or space
+    if len(space) < 2:
+        return 0, space.words[0]
     for word in guess_space:
         bit_list = []
         for gr, sp in space.map(word).items():
             bit_list.append((log2(len(space)/len(sp)), len(sp)))
-        entropy = sum(((size/len(space)*bits for bits, size in bit_list)))
+
+        prop_of_winning = int(word in space) / len(space)
+        entropy = sum(((size/len(space)*bits for bits, size in bit_list))) + prop_of_winning
         best = max(best, (entropy, word))
 
     return best
+
+
+def calc_entropy(space: Space, guess_space: Space = None) -> list:
+    guess_space = guess_space or space
+    entropies = []
+    for word in guess_space:
+        bit_list = []
+
+        for gr, sp in space.map(word).items():
+            bit_list.append((log2(len(space)/len(sp)), len(sp)))
+        entropy = sum(((size/len(space)*bits for bits, size in bit_list)))
+
+        entropies.append((entropy, word))
+
+    return entropies

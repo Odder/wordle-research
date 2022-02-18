@@ -28,3 +28,17 @@ def strip(word: str) -> str:
         if 97 <= ord(char) <= 122:
             stripped_word += char
     return stripped_word
+
+
+class Event:
+    def __init__(self):
+        self.listeners = []
+
+    def __iadd__(self, listener):
+        """Shortcut for using += to add a listener."""
+        self.listeners.append(listener)
+        return self
+
+    def notify(self, *args, **kwargs):
+        for listener in self.listeners:
+            listener(*args, **kwargs)

@@ -57,15 +57,18 @@ class Space:
     def filter(self, word: Word, score: tuple = None):
         return Space([w for w in self.words if w.guess(word) == score])
 
+    def append(self, word: Word) -> None:
+        self.words.append(word)
+
     def __iter__(self):
         return (w for w in self.words)
 
     def __len__(self):
         return len(self.words)
 
+    def __contains__(self, item):
+        return item in self.words
+
     def __repr__(self):
         return str([w for w in self.words]) if len(self) < 30 else f'{len(self)} words in space'
-
-    def append(self, word: Word) -> None:
-        self.words.append(word)
 
